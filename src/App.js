@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css'
 import SingleCard from './components/SingleCard';
 
 const cardImages = [
-  {"src":"/img/helmet-1.png"},
-  {"src":"/img/potion-1.png"},
-  {"src":"/img/ring-1.png"},
-  {"src":"/img/scroll-1.png"},
-  {"src":"/img/shield-1.png"},
-  {"src":"/img/sword-1.png"},
+  {"src":"/img/helmet-1.png",matched:false},
+  {"src":"/img/potion-1.png",matched:false},
+  {"src":"/img/ring-1.png",matched:false},
+  {"src":"/img/scroll-1.png",matched:false},
+  {"src":"/img/shield-1.png",matched:false},
+  {"src":"/img/sword-1.png",matched:false},
 ];
 
 function App() 
@@ -38,28 +38,49 @@ function App()
 
     setCards(shuffledCards);
     setTurns(0);
+    //////////////////////////
+    setChoiceOne(null);
+    setChoiceTwo(null);
   }
 
-  const compare = (card_choice_one , card_choice_two) =>
-  {
-    if (card_choice_one.src === card_choice_two.src) {
-      return 'match';
-    }else{
-      return 'not match';
-    }
-  }
+
 
   const handleChoice = (card) => 
   {
     choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
-
-    console.log(choiceOne)
-    // if(choiceOne && choiceTwo) {
-    //   let result = compare(choiceOne,choiceTwo);
-    //   console.log(result)
-    // }
   }
 
+  //useEffect hook fires initially when the component mounts
+  //and when the values of dependency array changes
+  useEffect(() => 
+  {
+    if(choiceOne && choiceTwo) 
+    {
+      if (choiceOne.src === choiceTwo.src) 
+      {
+        setCards(prevCards => (
+          prevCards.map(card => {
+            if(card.src === choiceOne.src)
+            {
+              return { ...card , matched:true}
+            }
+            else 
+            {
+              return card;
+            }
+          })
+        ));
+        resetTurns();
+      }
+      else
+      {
+        
+        resetTurns();
+      }
+    }
+  },[choiceOne,choiceTwo]);
+
+  console.log(cards)
   const resetTurns = () => {
     setChoiceOne(null);
     setChoiceTwo(null);
